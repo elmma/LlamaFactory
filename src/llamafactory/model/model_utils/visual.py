@@ -179,6 +179,16 @@ def get_forbidden_modules(config: "PretrainedConfig", finetuning_args: "Finetuni
     return forbidden_modules
 
 
+def _module_name_matches(name: str, target: str) -> bool:
+    """Check if module name matches target using suffix matching.
+
+    Uses suffix matching (name ends with .target or name equals target)
+    instead of substring matching to avoid false positives like:
+    - "k_proj" incorrectly matching "gk_proj" (gk_proj contains k_proj as substring)
+    """
+    return name.endswith("." + target) or name == target
+
+
 def patch_target_modules(
     model: "PreTrainedModel", finetuning_args: "FinetuningArguments", target_modules: list[str]
 ) -> list[str]:
@@ -189,7 +199,7 @@ def patch_target_modules(
         forbidden_modules.update(COMPOSITE_MODELS[model_type].lora_conflict_keys)
         module_names = []
         for name, _ in model.named_modules():
-            if any(target_module in name for target_module in target_modules) and not any(
+            if any(_module_name_matches(name, target_module) for target_module in target_modules) and not any(
                 forbidden_module in name for forbidden_module in forbidden_modules
             ):
                 module_names.append(name)
