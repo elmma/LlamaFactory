@@ -507,10 +507,40 @@ class KTransformersArguments:
 
 
 @dataclass
+class LinearAttentionArguments:
+    r"""Arguments for loading distilled linear attention models."""
+
+    use_linear_attention: bool = field(
+        default=False,
+        metadata={"help": "Whether to use linear attention (GLA) model loading."},
+    )
+    linear_attention_checkpoint: str | None = field(
+        default=None,
+        metadata={
+            "help": (
+                "Path to distilled linear attention checkpoint. Uses two-stage loading: "
+                "base model → attention replacement → weight loading."
+            )
+        },
+    )
+    linear_attention_type: str = field(
+        default="gla",
+        metadata={"help": "Type of linear attention: 'gla' or 'retention'."},
+    )
+    linear_attention_layers: str | None = field(
+        default=None,
+        metadata={
+            "help": "Comma-separated layer indices for linear attention. Auto-detected from config if not set."
+        },
+    )
+
+
+@dataclass
 class ModelArguments(
     SGLangArguments,
     VllmArguments,
     KTransformersArguments,
+    LinearAttentionArguments,
     ExportArguments,
     ProcessorArguments,
     QuantizationArguments,

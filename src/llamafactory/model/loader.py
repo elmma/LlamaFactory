@@ -34,6 +34,7 @@ from ..extras.packages import is_torch_version_greater_than
 from .adapter import init_adapter
 from .model_utils.ktransformers import load_kt_pretrained_model
 from .model_utils.liger_kernel import apply_liger_kernel
+from .model_utils.linear_attention import load_linear_attention_model
 from .model_utils.misc import register_autoclass
 from .model_utils.mod import convert_pretrained_model_to_mod, load_mod_pretrained_model
 from .model_utils.unsloth import load_unsloth_pretrained_model
@@ -150,6 +151,8 @@ def load_model(
 
         install_patch()
         model = load_kt_pretrained_model(config, model_args)
+    elif model_args.use_linear_attention:
+        model = load_linear_attention_model(config, model_args, init_kwargs)
     elif model_args.use_unsloth:
         if model_args.adapter_name_or_path is not None:
             lazy_load = True
