@@ -39,8 +39,10 @@ from ..extras.packages import is_pillow_available, is_pyav_available, is_transfo
 
 
 if is_pillow_available():
-    from PIL import Image
+    from PIL import Image, PngImagePlugin
     from PIL.Image import Image as ImageObject
+    # Fix for large PNG metadata chunks (some datasets have images with large text metadata)
+    PngImagePlugin.MAX_TEXT_CHUNK = 100 * (1024**2)  # 100MB limit
 
 
 if is_pyav_available():
